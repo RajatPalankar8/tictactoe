@@ -203,7 +203,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(isAiThinking = true) }
 
         aiJob = viewModelScope.launch {
-            delay(200) // Realistic arcade thinking feel
+            delay(750) // Human-like thinking delay so "AI IS THINKING..." is clearly visible
             val activeEngine = engine
             if (activeEngine == null) {
                 _uiState.update { it.copy(isAiThinking = false) }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.proto.simpletictactae.ui.theme.NeonColors
@@ -31,7 +32,8 @@ fun NeonButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     neonColor: Color = NeonColors.NeonX,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    fontSize: TextUnit = 15.sp
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -64,7 +66,7 @@ fun NeonButton(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 24.dp),
+                .padding(vertical = 14.dp, horizontal = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -74,9 +76,11 @@ fun NeonButton(
                 } else {
                     NeonColors.TextMuted
                 },
-                fontSize = 18.sp,
+                fontSize = fontSize,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
+                letterSpacing = 1.2.sp,
+                maxLines = 1,
+                softWrap = false
             )
         }
     }

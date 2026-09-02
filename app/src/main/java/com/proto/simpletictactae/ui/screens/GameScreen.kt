@@ -237,7 +237,7 @@ private fun ResultDialog(
 
                 NeonButton(text = "REMATCH", onClick = onRematch, neonColor = color)
                 Spacer(modifier = Modifier.height(12.dp))
-                NeonButton(text = "CHANGE SETUP", onClick = onChangeGame, neonColor = NeonColors.Grid)
+                NeonButton(text = "CHANGE MODE", onClick = onChangeGame, neonColor = NeonColors.Grid)
                 Spacer(modifier = Modifier.height(12.dp))
                 NeonButton(text = "MAIN MENU", onClick = onMenu, neonColor = NeonColors.TextSecondary)
             }

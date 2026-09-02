@@ -3,6 +3,7 @@ package com.proto.simpletictactae.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -55,128 +57,156 @@ fun SetupScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
+                .systemBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "GAME SETUP",
-                color = NeonColors.NeonX,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 2.sp
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 1. Game Mode
-            SectionHeader("SELECT GAME MODE")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OptionCard(
-                    text = "VS AI",
-                    isSelected = selectedMode == GameMode.HUMAN_VS_COMPUTER,
-                    onClick = { selectedMode = GameMode.HUMAN_VS_COMPUTER },
-                    modifier = Modifier.weight(1f)
-                )
-                OptionCard(
-                    text = "VS HUMAN",
-                    isSelected = selectedMode == GameMode.HUMAN_VS_HUMAN,
-                    onClick = { selectedMode = GameMode.HUMAN_VS_HUMAN },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 2. Board Config
-            SectionHeader("SELECT BOARD SIZE")
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val boards = listOf(
-                    BoardConfigs.CLASSIC to "3 × 3 (Classic • Get 3)",
-                    BoardConfigs.MEGA to "6 × 6 (Mega • Get 4)",
-                    BoardConfigs.PRO to "9 × 9 (Pro • Get 5)",
-                    BoardConfigs.ULTIMATE to "11 × 11 (Ultimate • Get 5)"
+                Text(
+                    text = "GAME SETUP",
+                    color = NeonColors.NeonX,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
                 )
-                boards.forEach { (cfg, label) ->
-                    OptionCard(
-                        text = label,
-                        isSelected = selectedConfig == cfg,
-                        onClick = { selectedConfig = cfg },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
 
-            // 3. Difficulty (if Vs Computer)
-            if (selectedMode == GameMode.HUMAN_VS_COMPUTER) {
-                Spacer(modifier = Modifier.height(24.dp))
-                SectionHeader("DIFFICULTY")
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 1. Game Mode
+                SectionHeader("SELECT GAME MODE")
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Difficulty.entries.forEach { diff ->
+                    OptionCard(
+                        text = "VS AI",
+                        isSelected = selectedMode == GameMode.HUMAN_VS_COMPUTER,
+                        onClick = { selectedMode = GameMode.HUMAN_VS_COMPUTER },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OptionCard(
+                        text = "VS HUMAN",
+                        isSelected = selectedMode == GameMode.HUMAN_VS_HUMAN,
+                        onClick = { selectedMode = GameMode.HUMAN_VS_HUMAN },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 2. Board Config
+                SectionHeader("SELECT BOARD SIZE")
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         OptionCard(
-                            text = diff.name,
-                            isSelected = selectedDifficulty == diff,
-                            onClick = { selectedDifficulty = diff },
+                            text = "3×3 (Get 3)",
+                            isSelected = selectedConfig == BoardConfigs.CLASSIC,
+                            onClick = { selectedConfig = BoardConfigs.CLASSIC },
+                            modifier = Modifier.weight(1f)
+                        )
+                        OptionCard(
+                            text = "6×6 (Get 4)",
+                            isSelected = selectedConfig == BoardConfigs.MEGA,
+                            onClick = { selectedConfig = BoardConfigs.MEGA },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OptionCard(
+                            text = "9×9 (Get 5)",
+                            isSelected = selectedConfig == BoardConfigs.PRO,
+                            onClick = { selectedConfig = BoardConfigs.PRO },
+                            modifier = Modifier.weight(1f)
+                        )
+                        OptionCard(
+                            text = "11×11 (Get 5)",
+                            isSelected = selectedConfig == BoardConfigs.ULTIMATE,
+                            onClick = { selectedConfig = BoardConfigs.ULTIMATE },
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
+
+                // 3. Difficulty (if Vs Computer)
+                if (selectedMode == GameMode.HUMAN_VS_COMPUTER) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    SectionHeader("AI DIFFICULTY")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Difficulty.entries.forEach { diff ->
+                            OptionCard(
+                                text = diff.name,
+                                isSelected = selectedDifficulty == diff,
+                                onClick = { selectedDifficulty = diff },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+
+                // 4. Your Symbol
+                Spacer(modifier = Modifier.height(12.dp))
+                SectionHeader("YOUR SYMBOL")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OptionCard(
+                        text = "X",
+                        isSelected = selectedPlayer == Player.X,
+                        onClick = { selectedPlayer = Player.X },
+                        accentColor = NeonColors.NeonX,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OptionCard(
+                        text = "O",
+                        isSelected = selectedPlayer == Player.O,
+                        onClick = { selectedPlayer = Player.O },
+                        accentColor = NeonColors.NeonO,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
 
-            // 4. Your Symbol
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionHeader("YOUR SYMBOL")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OptionCard(
-                    text = "X",
-                    isSelected = selectedPlayer == Player.X,
-                    onClick = { selectedPlayer = Player.X },
-                    accentColor = NeonColors.NeonX,
-                    modifier = Modifier.weight(1f)
-                )
-                OptionCard(
-                    text = "O",
-                    isSelected = selectedPlayer == Player.O,
-                    onClick = { selectedPlayer = Player.O },
-                    accentColor = NeonColors.NeonO,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Start & Back
-            NeonButton(
-                text = "START GAME",
-                onClick = {
-                    onStartGame(selectedConfig, selectedMode, selectedDifficulty, selectedPlayer)
-                },
-                neonColor = NeonColors.NeonX
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                NeonButton(
+                    text = "BACK",
+                    onClick = onBackClicked,
+                    neonColor = NeonColors.TextSecondary,
+                    modifier = Modifier.weight(1f)
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            NeonButton(
-                text = "BACK TO MENU",
-                onClick = onBackClicked,
-                neonColor = NeonColors.TextSecondary
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+                NeonButton(
+                    text = "START GAME",
+                    onClick = {
+                        onStartGame(selectedConfig, selectedMode, selectedDifficulty, selectedPlayer)
+                    },
+                    neonColor = NeonColors.NeonX,
+                    modifier = Modifier.weight(1.3f)
+                )
+            }
         }
     }
 }
@@ -186,12 +216,12 @@ private fun SectionHeader(title: String) {
     Text(
         text = title,
         color = NeonColors.TextSecondary,
-        fontSize = 13.sp,
+        fontSize = 11.sp,
         fontWeight = FontWeight.Bold,
-        letterSpacing = 1.5.sp,
+        letterSpacing = 1.2.sp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(bottom = 4.dp)
     )
 }
 
@@ -214,12 +244,18 @@ private fun OptionCard(
             color = if (isSelected) accentColor else NeonColors.TextMuted.copy(alpha = 0.3f)
         )
     ) {
-        Text(
-            text = text,
-            color = if (isSelected) accentColor else NeonColors.TextPrimary,
-            fontSize = 14.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-            modifier = Modifier.padding(vertical = 14.dp, horizontal = 16.dp)
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp, horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                color = if (isSelected) accentColor else NeonColors.TextPrimary,
+                fontSize = 12.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+            )
+        }
     }
 }

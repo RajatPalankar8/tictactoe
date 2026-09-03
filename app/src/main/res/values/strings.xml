@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Simple Tic Tac tae</string>
+    <string name="app_name">Tic Tac Tae</string>
+    <string name="exit_title">Leaving So Soon?</string>
+    <string name="exit_message">Are you sure you want to exit Tic Tac Tae?</string>
+    <string name="discover_more_games">DISCOVER MORE GAMES</string>
+    <string name="exit_confirm">EXIT</string>
+    <string name="share_app_title">Share Tic Tac Tae</string>
+    <string name="share_app_text">Hey! Check out this awesome futuristic Tic Tac Tae game! Play 3x3, 6x6, 9x9, and 11x11 boards against AI or friends: https://play.google.com/store/apps/details?id=%1$s</string>
 </resources>

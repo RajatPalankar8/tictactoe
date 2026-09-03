@@ -1,5 +1,7 @@
 package com.proto.simpletictactae.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.proto.simpletictactae.R
 import com.proto.simpletictactae.data.GamePreferences
 import com.proto.simpletictactae.data.PreferencesRepository
 import com.proto.simpletictactae.ui.components.NeonBackground
@@ -88,7 +91,17 @@ fun SettingsScreen(
                     checked = preferences.animationsEnabled,
                     onCheckedChange = { scope.launch { repository.setAnimationsEnabled(it) } }
                 )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                NeonButton(
+                    text = "SHARE WITH FRIENDS",
+                    onClick = { shareApp(context) },
+                    neonColor = NeonColors.NeonO
+                )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             NeonButton(
                 text = "BACK TO MENU",
@@ -97,6 +110,20 @@ fun SettingsScreen(
             )
         }
     }
+}
+
+private fun shareApp(context: Context) {
+    val packageName = context.packageName
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(
+            Intent.EXTRA_TEXT,
+            context.getString(R.string.share_app_text, packageName)
+        )
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share_app_title))
+    context.startActivity(shareIntent)
 }
 
 @Composable

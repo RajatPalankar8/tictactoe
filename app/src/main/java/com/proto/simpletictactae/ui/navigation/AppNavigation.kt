@@ -56,8 +56,14 @@ fun AppNavigation(
         composable(Routes.GAME) {
             GameScreen(
                 viewModel = gameViewModel,
-                onNavigateToSetup = { navController.navigate(Routes.SETUP) },
+                onNavigateToSetup = {
+                    gameViewModel.resetGame()
+                    navController.navigate(Routes.SETUP) {
+                        popUpTo(Routes.MAIN)
+                    }
+                },
                 onNavigateToMenu = {
+                    gameViewModel.resetGame()
                     navController.navigate(Routes.MAIN) {
                         popUpTo(Routes.MAIN) { inclusive = true }
                     }

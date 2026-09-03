@@ -112,6 +112,20 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         checkAiTurn()
     }
 
+    fun resetGame() {
+        aiJob?.cancel()
+        resultRecorded = false
+        engine = null
+        _uiState.update { current ->
+            current.copy(
+                result = GameResult.InProgress,
+                winningCells = emptyList(),
+                isPaused = false,
+                isAiThinking = false
+            )
+        }
+    }
+
     fun onCellClicked(row: Int, column: Int) {
         applyMove(row, column, isHuman = true)
     }

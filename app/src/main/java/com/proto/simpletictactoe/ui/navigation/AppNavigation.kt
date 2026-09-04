@@ -12,6 +12,7 @@ import com.proto.simpletictactoe.ui.screens.GameScreen
 import com.proto.simpletictactoe.ui.screens.GameViewModel
 import com.proto.simpletictactoe.ui.screens.HowToPlayScreen
 import com.proto.simpletictactoe.ui.screens.MainMenuScreen
+import com.proto.simpletictactoe.ui.screens.PrivacyPolicyScreen
 import com.proto.simpletictactoe.ui.screens.SetupScreen
 import com.proto.simpletictactoe.ui.screens.SettingsScreen
 import com.proto.simpletictactoe.ui.screens.SplashScreen
@@ -25,6 +26,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val STATS = "stats"
     const val HOW_TO_PLAY = "how_to_play"
+    const val PRIVACY_POLICY = "privacy_policy"
 }
 
 @Composable
@@ -93,6 +95,13 @@ fun AppNavigation(
 
         composable(Routes.SETTINGS) {
             SettingsScreen(
+                onPrivacyPolicyClicked = { navController.navigate(Routes.PRIVACY_POLICY) },
+                onBackClicked = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.PRIVACY_POLICY) {
+            PrivacyPolicyScreen(
                 onBackClicked = { navController.popBackStack() }
             )
         }

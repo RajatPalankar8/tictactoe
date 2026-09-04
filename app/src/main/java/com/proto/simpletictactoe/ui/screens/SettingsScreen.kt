@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Switch
@@ -38,6 +40,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
+    onPrivacyPolicyClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
     val context = LocalContext.current
@@ -50,7 +53,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -58,7 +62,7 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "SETTINGS",
@@ -68,7 +72,7 @@ fun SettingsScreen(
                     letterSpacing = 2.sp
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 SettingRow(
                     title = "SOUND EFFECTS",
@@ -95,13 +99,21 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 NeonButton(
+                    text = "PRIVACY POLICY",
+                    onClick = onPrivacyPolicyClicked,
+                    neonColor = NeonColors.Grid
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NeonButton(
                     text = "SHARE WITH FRIENDS",
                     onClick = { shareApp(context) },
                     neonColor = NeonColors.NeonO
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             NeonButton(
                 text = "BACK TO MENU",

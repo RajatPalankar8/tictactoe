@@ -1,22 +1,27 @@
 package com.proto.simpletictactoe.ui.screens
 
 import android.app.Activity
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,6 +65,9 @@ fun GameScreen(
     val activity = context as? Activity
     var isAdLoadingOverlayVisible by remember { mutableStateOf(false) }
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     BackHandler {
         viewModel.resetGame()
         onNavigateToMenu()
@@ -78,106 +87,160 @@ fun GameScreen(
     }
 
     NeonBackground {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Top Bar
+        if (isLandscape) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "TIC TAC TOE",
-                    color = NeonColors.NeonX,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
-                )
-
-                Card(
-                    modifier = Modifier.clickable { viewModel.toggleSound() },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = NeonColors.SurfaceCard),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = if (uiState.soundEnabled) NeonColors.NeonX.copy(alpha = 0.6f) else NeonColors.TextMuted.copy(alpha = 0.3f)
-                    )
+                // Controls Column (Left Side)
+                Column(
+                    modifier = Modifier
+                        .weight(1.1f)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
+                    TopBar(
+                        soundEnabled = uiState.soundEnabled,
+                        onToggleSound = { viewModel.toggleSound() }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    ScoreRow(
+                        xWins = uiState.xMatchWins,
+                        oWins = uiState.oMatchWins,
+                        draws = uiState.matchDraws
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TurnIndicator(
+                        currentPlayer = uiState.currentPlayer,
+                        isAiThinking = uiState.isAiThinking
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = if (uiState.soundEnabled) "🔊 SOUND ON" else "🔇 SOUND OFF",
-                            color = if (uiState.soundEnabled) NeonColors.NeonX else NeonColors.TextMuted,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
+                        NeonButton(
+                            text = "RESTART",
+                            onClick = { viewModel.restartGame() },
+                            neonColor = NeonColors.NeonX,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 13.sp
+                        )
+
+                        NeonButton(
+                            text = "CHANGE MODE",
+                            onClick = onNavigateToSetup,
+                            neonColor = NeonColors.TextSecondary,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 13.sp
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    BannerAdView(
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                // Board Container (Right Side)
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val boardSize = minOf(maxWidth, maxHeight)
+                    NeonBoard(
+                        board = uiState.board,
+                        winningCells = uiState.winningCells,
+                        enabled = uiState.result == GameResult.InProgress && !uiState.isAiThinking,
+                        onCellClick = { r, c -> viewModel.onCellClicked(r, c) },
+                        modifier = Modifier.size(boardSize)
+                    )
                 }
             }
-
-            // Scores
-            ScoreRow(
-                xWins = uiState.xMatchWins,
-                oWins = uiState.oMatchWins,
-                draws = uiState.matchDraws
-            )
-
-            // Turn Indicator
-            TurnIndicator(
-                currentPlayer = uiState.currentPlayer,
-                isAiThinking = uiState.isAiThinking
-            )
-
-            // Board
-            Box(
+        } else {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                NeonBoard(
-                    board = uiState.board,
-                    winningCells = uiState.winningCells,
-                    enabled = uiState.result == GameResult.InProgress && !uiState.isAiThinking,
-                    onCellClick = { r, c -> viewModel.onCellClicked(r, c) }
+                // Top Bar
+                TopBar(
+                    soundEnabled = uiState.soundEnabled,
+                    onToggleSound = { viewModel.toggleSound() }
+                )
+
+                // Scores
+                ScoreRow(
+                    xWins = uiState.xMatchWins,
+                    oWins = uiState.oMatchWins,
+                    draws = uiState.matchDraws
+                )
+
+                // Turn Indicator
+                TurnIndicator(
+                    currentPlayer = uiState.currentPlayer,
+                    isAiThinking = uiState.isAiThinking
+                )
+
+                // Board
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val boardSize = minOf(maxWidth, maxHeight)
+                    NeonBoard(
+                        board = uiState.board,
+                        winningCells = uiState.winningCells,
+                        enabled = uiState.result == GameResult.InProgress && !uiState.isAiThinking,
+                        onCellClick = { r, c -> viewModel.onCellClicked(r, c) },
+                        modifier = Modifier.size(boardSize)
+                    )
+                }
+
+                // Bottom Actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    NeonButton(
+                        text = "RESTART",
+                        onClick = { viewModel.restartGame() },
+                        neonColor = NeonColors.NeonX,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    NeonButton(
+                        text = "CHANGE MODE",
+                        onClick = onNavigateToSetup,
+                        neonColor = NeonColors.TextSecondary,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                BannerAdView(
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
-
-            // Bottom Actions
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                NeonButton(
-                    text = "RESTART",
-                    onClick = { viewModel.restartGame() },
-                    neonColor = NeonColors.NeonX,
-                    modifier = Modifier.weight(1f)
-                )
-
-                NeonButton(
-                    text = "CHANGE MODE",
-                    onClick = onNavigateToSetup,
-                    neonColor = NeonColors.TextSecondary,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            BannerAdView(
-                modifier = Modifier.padding(top = 8.dp)
-            )
         }
 
         // Result Overlay
@@ -232,6 +295,52 @@ fun GameScreen(
 }
 
 @Composable
+private fun TopBar(
+    soundEnabled: Boolean,
+    onToggleSound: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "TIC TAC TOE",
+            color = NeonColors.NeonX,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 2.sp
+        )
+
+        Card(
+            modifier = Modifier.clickable { onToggleSound() },
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = NeonColors.SurfaceCard),
+            border = BorderStroke(
+                width = 1.dp,
+                color = if (soundEnabled) NeonColors.NeonX.copy(alpha = 0.6f) else NeonColors.TextMuted.copy(alpha = 0.3f)
+            )
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = if (soundEnabled) "🔊 SOUND ON" else "🔇 SOUND OFF",
+                    color = if (soundEnabled) NeonColors.NeonX else NeonColors.TextMuted,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ResultOverlay(
     result: GameResult,
     gameMode: GameMode,
@@ -262,6 +371,7 @@ private fun ResultOverlay(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

@@ -3,6 +3,7 @@ package com.proto.simpletictactoe.ui.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,7 +30,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
@@ -51,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -74,108 +79,221 @@ fun MainMenuScreen(
     var showExitDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     BackHandler(enabled = true) {
         showExitDialog = true
     }
 
-
-
     NeonBackground {
-
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .padding(horizontal = 32.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(R.mipmap.ic_launcher_foreground),
-                contentDescription = "App icon",
-                modifier = Modifier.size(160.dp)
-            )
-            // Neon Title
-            Text(
-                text = "TIC TAC TOE",
-                color = NeonColors.NeonX,
-                fontSize = 34.sp,
-                fontWeight = FontWeight.Black,
-                letterSpacing = 4.sp,
-                modifier = Modifier.offset(y = (-12).dp)
-            )
-
+        if (isLandscape) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 6.dp, bottom = 32.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                // Left side: Header (Icon, Title, Subtitle, Banner Ad)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.mipmap.ic_launcher_foreground),
+                        contentDescription = "App icon",
+                        modifier = Modifier.size(110.dp)
+                    )
+                    Text(
+                        text = "TIC TAC TOE",
+                        color = NeonColors.NeonX,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 3.sp,
+                        modifier = Modifier.offset(y = (-8).dp)
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+                    ) {
+                        Text(
+                            text = "NEON X",
+                            color = NeonColors.NeonX,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp
+                        )
+                        Text(
+                            text = "•",
+                            color = NeonColors.AccentGlow,
+                            fontSize = 12.sp
+                        )
+                        Text(
+                            text = "NEON O",
+                            color = NeonColors.NeonO,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp
+                        )
+                    }
+
+                    BannerAdView(
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                // Right side: Buttons
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    NeonButton(
+                        text = "PLAY",
+                        onClick = onPlayClicked,
+                        neonColor = NeonColors.NeonX
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    NeonButton(
+                        text = "HOW TO PLAY",
+                        onClick = onHowToPlayClicked,
+                        neonColor = NeonColors.Grid
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    NeonButton(
+                        text = "STATISTICS",
+                        onClick = onStatsClicked,
+                        neonColor = NeonColors.AccentGlow
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    NeonButton(
+                        text = "SETTINGS",
+                        onClick = onSettingsClicked,
+                        neonColor = NeonColors.TextSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    NeonButton(
+                        text = "SHARE WITH FRIENDS",
+                        onClick = { shareApp(context) },
+                        neonColor = NeonColors.NeonO
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(horizontal = 32.dp, vertical = 24.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(R.mipmap.ic_launcher_foreground),
+                    contentDescription = "App icon",
+                    modifier = Modifier.size(160.dp)
+                )
+                // Neon Title
                 Text(
-                    text = "NEON X",
+                    text = "TIC TAC TOE",
                     color = NeonColors.NeonX,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 4.sp,
+                    modifier = Modifier.offset(y = (-12).dp)
                 )
-                Text(
-                    text = "•",
-                    color = NeonColors.AccentGlow,
-                    fontSize = 13.sp
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 6.dp, bottom = 32.dp)
+                ) {
+                    Text(
+                        text = "NEON X",
+                        color = NeonColors.NeonX,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    )
+                    Text(
+                        text = "•",
+                        color = NeonColors.AccentGlow,
+                        fontSize = 13.sp
+                    )
+                    Text(
+                        text = "NEON O",
+                        color = NeonColors.NeonO,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    )
+                }
+
+                // Buttons
+                NeonButton(
+                    text = "PLAY",
+                    onClick = onPlayClicked,
+                    neonColor = NeonColors.NeonX
                 )
-                Text(
-                    text = "NEON O",
-                    color = NeonColors.NeonO,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NeonButton(
+                    text = "HOW TO PLAY",
+                    onClick = onHowToPlayClicked,
+                    neonColor = NeonColors.Grid
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NeonButton(
+                    text = "STATISTICS",
+                    onClick = onStatsClicked,
+                    neonColor = NeonColors.AccentGlow
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NeonButton(
+                    text = "SETTINGS",
+                    onClick = onSettingsClicked,
+                    neonColor = NeonColors.TextSecondary
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                NeonButton(
+                    text = "SHARE WITH FRIENDS",
+                    onClick = { shareApp(context) },
+                    neonColor = NeonColors.NeonO
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                BannerAdView(
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
-
-            // Buttons
-            NeonButton(
-                text = "PLAY",
-                onClick = onPlayClicked,
-                neonColor = NeonColors.NeonX
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            NeonButton(
-                text = "HOW TO PLAY",
-                onClick = onHowToPlayClicked,
-                neonColor = NeonColors.Grid
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            NeonButton(
-                text = "STATISTICS",
-                onClick = onStatsClicked,
-                neonColor = NeonColors.AccentGlow
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            NeonButton(
-                text = "SETTINGS",
-                onClick = onSettingsClicked,
-                neonColor = NeonColors.TextSecondary
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            NeonButton(
-                text = "SHARE WITH FRIENDS",
-                onClick = { shareApp(context) },
-                neonColor = NeonColors.NeonO
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            BannerAdView(
-                modifier = Modifier.padding(top = 8.dp)
-            )
         }
 
         if (showExitDialog) {
@@ -238,7 +356,9 @@ private fun ExitDialog(
         },
         text = {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(

@@ -47,7 +47,6 @@ fun NeonBoard(
 
     Canvas(
         modifier = modifier
-            .fillMaxWidth()
             .aspectRatio(1f)
             .padding(12.dp)
             .pointerInput(board.size, enabled) {

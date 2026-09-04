@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "com.proto.simpletictactae"
+    namespace = "com.proto.simpletictactoe"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.proto.simpletictactae"
+        applicationId = "com.proto.simpletictactoe"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -47,6 +48,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
+
+    // AdMob & Firebase
+    implementation(libs.playServicesAds)
+    implementation(platform(libs.firebaseBom))
+    implementation(libs.firebaseAnalytics)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
